@@ -40,12 +40,12 @@ find.trait.position <- function(traitnames, maps,
                                 prefix = "trait", digits = 3, ...)
 {
   ## Find match of traitname and trait.annotation.
-  is.selected <- find.trait.annot(traitnames, trait.annotation)
+  is.selected <- find.trait.annot(unique(traitnames), trait.annotation)
   n.pos <- sum(is.selected > 0)
   if(n.pos) {
     trait.position <- data.frame(
       chr = as.character(trait.annotation$Chromosome[is.selected]))
-    row.names(trait.position) <- traitnames[is.selected > 0]
+    row.names(trait.position) <- unique(traitnames)[is.selected > 0]
 
     ## Set up physical positions for correspondence.
     Mb.pos <- trait.annotation$Chromosome_Position[is.selected]

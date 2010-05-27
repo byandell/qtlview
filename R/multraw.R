@@ -403,23 +403,25 @@ plot.multraw <- function(x, chr = "",
                                   phenotype))
     }
     if(x$sex[1] == "ignore") {
-      tmp <- make.mean(x$cross, chr, phenotype)
+      tmp <- make.mean(x$cross, chr, phenotypes$trans.pheno)
       one$AA <- unlist(lapply(tmp, function(x) x[,1]))
       one$AB <- unlist(lapply(tmp, function(x) x[,2]))
       one$BB <- unlist(lapply(tmp, function(x)
                               if(ncol(x) == 3) x[,3] else rep(NA, nrow(x))))
     }
     if(x$sex[1] %in% c("female","both")) {
-      tmp <- make.mean(subset(x$cross, ind = (getsex(x$cross)$sex == 0)),
-                       chr, phenotype)
+      tmp <- getsex(x$cross)$sex == 0
+      tmp <- make.mean(subset(x$cross, ind = tmp), chr,
+                       phenotypes$trans.pheno[tmp])
       one$AA.F <- unlist(lapply(tmp, function(x) x[,1]))
       one$AB.F <- unlist(lapply(tmp, function(x) x[,2]))
       one$BB.F <- unlist(lapply(tmp, function(x)
                                 if(ncol(x) == 3) x[,3] else rep(NA, nrow(x))))
     }
     if(x$sex[1] %in% c("male","both")) {
-      tmp <- make.mean(subset(x$cross, ind = (getsex(x$cross)$sex == 1)),
-                       chr, phenotype)
+      tmp <- getsex(x$cross)$sex == 1
+      tmp <- make.mean(subset(x$cross, ind = tmp), chr,
+                       phenotypes$trans.pheno[tmp])
       one$AA.M <- unlist(lapply(tmp, function(x) x[,1]))
       one$AB.M <- unlist(lapply(tmp, function(x) x[,2]))
       one$BB.M <- unlist(lapply(tmp, function(x)
@@ -613,7 +615,7 @@ add.raws <- function(cross, newdata = NULL,
     if(length(tmp3)) {
       ## First column of newdata must have MouseNum as "Mousemmmm".
       row.names(newdata) <- newdata[[1]]
-      newdata <- newdata[, tmp3]
+      newdata <- newdata[, tmp3, drop = FALSE]
       cross <- add.phenos(cross, newdata, index)
     }
     else
