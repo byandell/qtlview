@@ -674,12 +674,13 @@ plot.aug.scanone <- function(x,
   ylab <- ifelse(add.names, "", "Phenotype Index")
 
   ## Set up to plot trait position if it is gene transcript.
-  if(add.position) {
-    trait.position <- attr(x, "trait.position")
+  trait.position <- attr(x, "trait.position")
+  if(add.position & !is.null(trait.position)) {
     tmp <- attr(trait.position, "prefix")
     trait.position <- trait.position[dimnames(lod)[[2]], ]
     if(tmp != "")
-      names(trait.position) <- substring(names(trait.position), nchar(tmp) + 2)
+      names(trait.position) <- substring(names(trait.position),
+                                         nchar(tmp) + 2)
     
     n.pos <- nrow(trait.position)
     cexs <- max(0.5, min(2, 50 / n.pos))
