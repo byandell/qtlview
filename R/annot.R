@@ -89,10 +89,11 @@ read.annotation <- function(filename, update.names = NULL,
   ## Only the following are curently used in package qtlmult:
   ## a_gene_id,Symbol,Chromosome,Chromosome_Position
   final.names <- c("a_substance_id", "accession_code",
-    "a_gene_id", "Symbol", "Alternate_Symbols", "Name",
-    "Alternate_Names", "Description",
-    "Chromosome", "Start_Coordinate", "End_Coordinate",
-    "Strand")
+                   "a_gene_id", "Symbol", "Alternate_Symbols",
+                   "LocusLinkID", "Name",
+                   "Alternate_Names", "Description",
+                   "Chromosome", "Start_Coordinate", "End_Coordinate",
+                   "Strand")
 
   if(length(update.names)) {
     ## Check that update names are in final names.
