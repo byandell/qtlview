@@ -131,39 +131,15 @@ multraw <- function(traitnames = NULL,
              crosssex$pheno[[traitname]] <-
                trans.pheno[sexpgm$sex == 0, traitname]
            })
-    
-    ## Interacting covariate: sex.
-    intcov <- if(sex[i] == "both")
-      as.matrix(sexpgm$sex)
-    else
-      NULL
 
-    ## Additive covariate
-    addcov <- intcov
-
-    ## Add batch if category not clinical.
-    if(category != "clinical") {
-      tissue.batch <- paste(category, "batch", sep = ".")
-      form <- formula(paste("~", tissue.batch))
-      batchcov <- model.matrix(form, crosssex$pheno)[, -1]
-      tmp <- matrix(NA, nind(crosssex), ncol(batchcov))
-      tmp[!is.na(crosssex$pheno[[tissue.batch]]), ] <- batchcov
-      addcov <- cbind(addcov, tmp)
-    }
-    else
-      tissue.batch <- NULL
-
-    ## Add covariates if any.
-    if(!is.null(covariates)) {
-      covariates <- mytrait(covariates, crosssex$pheno)
-      addcov <- cbind(addcov, crosssex$pheno[, covariates])
-    }
-
+    ## Covariates (should be handled outside this routine).
+    covlist <- mycov(sexpgm, sex[i], category, covariates, crosssex)
+  
     pheno.col <- find.pheno(crosssex, traitname)
 
     ## Profile LOD.
     sums[[i]] <- scanone(crosssex, chr, pheno.col, method = method,
-                         intcov = intcov, addcov = addcov)
+                         intcov = covlist$intcov, addcov = covlist$addcov)
 
     ## Need to modify this to allow for X chromosome threshold.
     threshold.lod[i] <- threshold.perm(perms, sex[i], threshold.level)
@@ -180,12 +156,44 @@ multraw <- function(traitnames = NULL,
               threshold.lod = threshold.lod, sex = sex,
               sums = sums, traitnames = traitnames,
               n.traits = n.traits, trans.pheno = trans.pheno,
-              tissue.batch = tissue.batch, cross = cross,
+              tissue.batch = covlist$tissue.batch, cross = cross,
               main = main, ylab = ylab, maps = maps,
               trait.position = trait.position)
 
   class(out) <- c("multraw", "list")
   out
+}
+###########################################################
+## This should be removed ultimately.
+mycov <- function(sexpgm, sex, category, covariates, crosssex)
+{
+  ## Interacting covariate: sex.
+  intcov <- if(sex == "both")
+    as.matrix(sexpgm$sex)
+  else
+    NULL
+  
+  ## Additive covariate
+  addcov <- intcov
+  
+  ## Add batch if category not clinical.
+  if(category != "clinical") {
+    tissue.batch <- paste(category, "batch", sep = ".")
+    form <- formula(paste("~", tissue.batch))
+    batchcov <- model.matrix(form, crosssex$pheno)[, -1]
+    tmp <- matrix(NA, nind(crosssex), ncol(batchcov))
+    tmp[!is.na(crosssex$pheno[[tissue.batch]]), ] <- batchcov
+    addcov <- cbind(addcov, tmp)
+  }
+  else
+    tissue.batch <- NULL
+  
+  ## Add covariates if any.
+  if(!is.null(covariates)) {
+    covariates <- mytrait(covariates, crosssex$pheno)
+    addcov <- cbind(addcov, crosssex$pheno[, covariates])
+  }
+  list(intcov = intcov, addcov = addcov, tissue.batch = tissue.batch)
 }
 ###########################################################  
 print.multraw <- function(x, ...) print(summary(x, ...), ...)
@@ -372,7 +380,8 @@ plot.multraw <- function(x, chr = "",
   }
 
   one <- x$sums[[1]]
-  
+
+  ## This is very specific to mouse crosses.
   if(show.means) {
     phenotypes <- x$cross$pheno
 

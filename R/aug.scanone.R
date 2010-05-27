@@ -83,7 +83,7 @@ aug.scanone <- function(traitnames = mytrait(pheno = cross$pheno),
   lods.attr <- attributes(lods)
   tmp <- lods[, traitnames]
   tmp[tmp > lod.error & !is.na(tmp)] <- NA
-  lods[, -(1:2)] <- tmp
+  lods[, -(1:2), drop = FALSE] <- tmp
   ## Recover attributes that got trashed.
   for(i in names(lods.attr)) {
     if(is.null(attr(lods, i)))
@@ -178,8 +178,8 @@ max.aug.scanone <- function(object,
   
   ## Drop traits below threshold.lod.
   if(any(threshold.lod > 0)) {
-    tmp <- object[, -(1:2)]
-    object[, -(1:2)] <- tmp[, threshold.pass(tmp, threshold.lod, object$chr)]
+    tmp <- object[, -(1:2), drop = FALSE]
+    object[, -(1:2), drop = FALSE] <- tmp[, threshold.pass(tmp, threshold.lod, object$chr)]
   }
   else { ## Drop any that are all NA.
     tmp <- apply(object, 2, function(x) !all(is.na(x)))
@@ -219,7 +219,7 @@ max.aug.scanone <- function(object,
 
       ## Add position in Mb.
       tmp$pos.Mb <- rep(NA, nrow(tmp))
-      tmp <- tmp[, c(1:2,4,3)]
+      tmp <- tmp[, c(1:2,4,3), drop = FALSE]
       for(j in levels(tmp$chr)) {
         jj <- tmp$chr == j
         if(any(jj))
@@ -262,8 +262,8 @@ summary.aug.scanone <- function(object,
     
     ## Drop in traits below threshold.lod.
     if(any(threshold.lod > 0)) {
-      tmp <- object[, -(1:2)]
-      object[, -(1:2)] <- tmp[, threshold.pass(tmp, threshold.lod, object$chr)]
+      tmp <- object[, -(1:2), drop = FALSE]
+      object[, -(1:2), drop = FALSE] <- tmp[, threshold.pass(tmp, threshold.lod, object$chr)]
     }
     else { ## Drop any that are all NA.
       tmp <- apply(object, 2, function(x) !all(is.na(x)))
@@ -382,8 +382,10 @@ plot.summary.aug.scanone <- function(x,
   x$lod <- as.matrix(x$lod[tmp,, drop = FALSE])
   pos <- as.matrix(x$pos[tmp, chr])
   n.traits <- sum(tmp)
-  if(n.traits == 0)
-    stop("no phenotypes pass threshold.lod")
+  if(n.traits == 0) {
+    tmp <- mystop("\n\n*** No phenotypes pass threshold.lod. ***\n\n")
+    return(tmp)
+  }
   
   ## Limit lod to (0, max.lod).
   x$lod[is.na(x$lod)] <- 0
@@ -573,7 +575,10 @@ plot.aug.scanone <- function(x,
   lod <- lod[, threshold.pass(lod, threshold.lod, x$chr), drop = FALSE]
 
   if(ncol(lod) == 0) {
-    stop(paste("No traits pass threshold of", threshold.lod))
+    tmp <- mystop(paste("\n\n*** No traits pass threshold of", threshold.lod, ". ***\n\n"))
+    print(tmp)
+    return(tmp)
+    ## Never get to next line.
     return(myplot.scanone(x,
                           threshold.lod = threshold.lod, main = main,
                           chr = chr, ...))
@@ -581,7 +586,7 @@ plot.aug.scanone <- function(x,
   
   n.traits <- ncol(lod)
   if(n.traits == 0)
-    stop("no phenotypes with LOD above threshold.lod")
+    return(mystop("\n\n*** No phenotypes with LOD above threshold.lod. ***\n\n"))
 
   traitnames <- dimnames(lod)[[2]]
   labels <- mylabels(traitnames, length(traitnames), ylab.choice)

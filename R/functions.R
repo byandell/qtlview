@@ -1,3 +1,12 @@
+mystop <- function(x, ...)
+{
+  class(x) <- c("mystop", class(x))
+  x
+}
+summary.mystop <- function(object, ...)
+  cat(object)
+plot.mystop <- function(x, ...)
+  cat(x)
 ###########################################################  
 normal.trans <- function(x) {
   x <- rank(x, na.last = "keep")

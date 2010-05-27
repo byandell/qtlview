@@ -339,6 +339,13 @@ read.maps <- function(cross, filename, chr.valid = names(cross$geno),
     match.snp <- match(cross.map, geno$snp)
   }
 
+  ## Verify if any SNPs change order.
+  is.amiss <- sapply(Mb.map, function(x) any(diff(x) < 0))
+  if(any(is.amiss)) {
+    is.amiss <- names(is.amiss[is.amiss])
+    warning(paste("Marker order changed on chr:", paste(is.amiss, collapse = ",")))
+  }
+  
   ## NON-SEGREGATING SNPs (not on genetic map).
   
   ## Drop any non-segregating SNPs with missing chr or loc.

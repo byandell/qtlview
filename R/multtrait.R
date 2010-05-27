@@ -63,6 +63,9 @@ multtrait <- function(traitnames = NULL,
   scans <- get.scans(traitnames, category, filename, cross,
                      maps, chr, threshold.lod, sex,
                      trait.annotation = trait.annotation, ...)
+  if("mystop" %in% class(scans))
+    return(scans)
+  
   is.selected <- attr(scans, "is.selected")
   
   ## Extract category, tissue.name, traitnames.
@@ -73,7 +76,7 @@ multtrait <- function(traitnames = NULL,
   if(tmp == 0) {
     tmp <- paste("\n\n*** No traits found in file", filename, "***\n\n")
     cat(tmp)
-    stop(tmp)
+    return(mystop(tmp))
   }
 
   ## Set up default title if needed.
@@ -126,7 +129,7 @@ plot.multtrait <- function(x,
                            ...)
 {
   ## Find traits that pass threshold.
-  if(sum(threshold.pass(x$scans[, -(1:2)],
+  if(sum(threshold.pass(x$scans[, -(1:2), drop = FALSE],
                         x$threshold.lod,
                         x$scans$chr)) <= 1)
     heatmap <- FALSE

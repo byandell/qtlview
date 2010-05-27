@@ -6,7 +6,7 @@ calc.hc <- function(scans, cluster)
     ## Can only cluster by LOD scores as traits may not be available.
     tmpfn <- function(x) if(all(x == 0)) x else (x / max(x, na.rm = TRUE))
 
-    rlod <- apply(as.matrix(scans[, -(1:2)]), 2, tmpfn)
+    rlod <- apply(as.matrix(scans[, -(1:2), drop = FALSE]), 2, tmpfn)
     hc <- hclust(dist(t(rlod)))
   }
   else
@@ -77,8 +77,10 @@ get.scans <- function(traitnames = NULL,
     if(all(tmp == 0))
       stop("no markers match cross object")
   }
-  scans <- scans[tmp, ]
-  scans[, lod.names] <- lods[tmp > 0, lod.names]
+  ## Put lods in scans, but keep order from scans.
+  scans[tmp, lod.names] <- lods[tmp > 0, lod.names]
+  scans <- scans[sort(tmp), ]
+  ## Reduce chr levels to those remaining.
   tmp <- table(scans$chr)
   scans$chr <- ordered(scans$chr, names(tmp)[tmp > 0])
   rm(lods, lod.names)
@@ -116,9 +118,9 @@ get.scans <- function(traitnames = NULL,
     scans <- scans[scans$chr %in% tmp$chr, ]
     if(!nrow(scans)) {
       tmp <- paste("\n\n*** No chromosomes pass threshold",
-                   signif(threshold.lod, 5), "for any trait ***\n\n")
+                   signif(threshold.lod, 5), "for any trait. ***\n\n")
       cat(tmp)
-      stop(tmp)
+      return(mystop(tmp))
     }
     scans$chr <- ordered(scans$chr, tmp$chr)
   }
@@ -127,7 +129,7 @@ get.scans <- function(traitnames = NULL,
   is.selected <- tmp$traits
   if(!any(is.selected)) {
     tmp <- paste("\n\n*** No trait passes threshold",
-                 signif(threshold.lod, 5), "on any chromosome ***\n\n")
+                 signif(threshold.lod, 5), "on any chromosome. ***\n\n")
     cat(tmp)
     stop(tmp)
   }

@@ -79,7 +79,7 @@ cistrans <- function(x = read.table(filename, header = TRUE, sep = sep),
   ## Reduce to entries above min.lod.
   tmp <- x$peak.score >= min.lod
   if(!any(tmp))
-    stop(paste("no transcripts above minimum score of", min.lod))
+    return(mystop(paste("\n\n*** No transcripts above minimum score of", min.lod, ". ***\n\n")))
   x <- x[tmp, ]
 
   ## Drop cis traits?

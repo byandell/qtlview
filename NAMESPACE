@@ -23,6 +23,9 @@ export(read.annotation)
 # with functions such as "plot.xxx" declared in the package.
 #
 
+S3method(summary, mystop)
+S3method(plot, mystop)
+
 S3method(summary, read.perms)
 S3method(plot, read.perms)
 S3method(summary, read.maps)
