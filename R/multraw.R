@@ -529,7 +529,7 @@ get.raws <- function(filename = NULL, newdata = NULL)
       tmp <- match("Tissue", new.names)
       if(!is.na(tmp)) {
         tissues <- newdata[[tmp]]
-        newdata <- newdata[, -tmp]
+        newdata <- newdata[, -tmp, drop = FALSE]
         new.names <- names(newdata)
       }
       else
@@ -543,7 +543,7 @@ get.raws <- function(filename = NULL, newdata = NULL)
         if(!is.null(tissues))
           new.names <- paste(tissues, new.names, sep = ".")
         
-        tmp <- t(newdata[, mouse.names])
+        tmp <- t(newdata[, mouse.names, drop = FALSE])
         dimnames(tmp)[[2]] <- new.names
         newdata <- data.frame(MouseNum = mouse.names)
         newdata <- cbind(newdata, tmp)
@@ -588,7 +588,7 @@ add.phenos <- function(cross, newdata = NULL, index = NULL)
       mat <- match(as.character(cross$pheno[[index]]),row.names(newdata))
       if (length(mat[is.na(mat)])==length(mat)) 
         stop("no row names of newdata match index")
-      cross$pheno <- cbind(cross$pheno,newdata[mat,])
+      cross$pheno <- cbind(cross$pheno,newdata[mat,, drop = FALSE])
     }
   }
   cross
