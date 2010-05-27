@@ -4,12 +4,13 @@
 # directive.
 #
 
-export(multraw)
-export(multtrait)
+export(add.phenos)
 export(aug.scanone)
 export(cistrans)
-export(make.bestscan)
 export(listof.complod)
+export(make.bestscan)
+export(multraw)
+export(multtrait)
 export(mygeno.image)
 export(pull.pseudomarkers)
 export(qm.approx)

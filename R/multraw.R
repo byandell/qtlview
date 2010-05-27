@@ -41,11 +41,9 @@ multraw <- function(traitnames = NULL,
       traitnames <- names(newdata)[-1]
   }
 
-  toofew <- 100
-  
   chr <- find.chr(chr, names(cross$geno))
 
-  cross <- add.raws(cross, newdata, traitnames, covariates, toofew)
+  cross <- add.raws(cross, newdata, traitnames, covariates)
 
   n.profiles <- n.traits <- length(traitnames)
   
@@ -557,28 +555,57 @@ get.raws <- function(filename = NULL, newdata = NULL)
   newdata
 }  
 ###########################################################  
+add.phenos <- function(cross, newdata = NULL, index = NULL)
+{
+  if(!is.null(newdata)) {
+    if(any(names(newdata) %in% names(cross$pheno)))
+      warning("some cross phenotypes overwritten with new data")
+
+    if(is.null(index)) {
+      n.ind <- nind(cross)
+      if(nrow(newdata) != n.ind)
+        stop(paste("newdata must have number of rows (",
+                   nrow(newdata), ") as cross individuals (",
+                   n.ind, ")", sep = ""))
+
+      ## Must assume newdata in same order as cross here.
+      for(i in names(newdata))
+        cross$pheno[[i]] <- newdata[[i]]
+    }
+    else {
+      ## The row.names of newdata must be index.
+
+      mat <- match(row.names(newdata), cross$pheno[[index]], nomatch = 0)
+      if(!any(mat > 0))
+        stop("no row names of newdata match index")
+
+      tmp <- rep(NA, nind(cross))
+      for(i in names(newdata)) {
+        tmp[mat] <- newdata[mat > 0, i]
+        cross$pheno[[i]] <- tmp
+      }
+    }
+  }
+  cross
+}
+###########################################################  
 add.raws <- function(cross, newdata = NULL,
                      traitnames = names(newdata),
-                     covariates = NULL, toofew)
+                     covariates = NULL,
+                     index = "MouseNum")
 {
   ## Allow user to pass a data frame
   if(!is.null(newdata)) {
-    tmp <- rep(NA, nind(cross))
-    ## First column of traitnames must have MouseNum as "Mousemmmm".
-    tmp2 <- match(newdata[, 1], cross$pheno$MouseNum, nomatch = 0)
-    if(sum(tmp2 > 0) < toofew) {
-      stop(paste("fewer than", toofew, "mouse IDs match"))
-    }
     ## Expand trait names if abbeviated.
     tmp3 <- mytrait(c(traitnames,covariates), newdata, warn = FALSE)
     tmp3 <- tmp3[!is.na(tmp3)]
+
+    ## Add new phenotypes and/or covariates.
     if(length(tmp3)) {
-      ## Add new phenotypes and/or covariates.
-      ## NB: Using an existing name will replace that phenotype.
-      for(i in tmp3) {
-        tmp[tmp2] <- newdata[tmp2 > 0, i]
-        cross$pheno[[i]] <- tmp
-      }
+      ## First column of newdata must have MouseNum as "Mousemmmm".
+      row.names(newdata) <- newdata[[1]]
+      newdata <- newdata[, tmp3]
+      cross <- add.phenos(cross, newdata, index)
     }
     else
       warning("no traitnames or covariates match newdata")
