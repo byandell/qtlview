@@ -585,16 +585,10 @@ add.phenos <- function(cross, newdata = NULL, index = NULL)
     }
     else {
       ## The row.names of newdata must be index.
-
-      mat <- match(row.names(newdata), cross$pheno[[index]], nomatch = 0)
-      if(!any(mat > 0))
+      mat <- match(as.character(cross$pheno[[index]]),row.names(newdata))
+      if (length(mat[is.na(mat)])==length(mat)) 
         stop("no row names of newdata match index")
-
-      tmp <- rep(NA, nind(cross))
-      for(i in names(newdata)) {
-        tmp[mat] <- newdata[mat > 0, i]
-        cross$pheno[[i]] <- tmp
-      }
+      cross$pheno <- cbind(cross$pheno,newdata[mat,])
     }
   }
   cross
