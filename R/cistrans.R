@@ -92,11 +92,15 @@ cistrans <- function(x = read.table(filename, header = TRUE, sep = sep),
       x <- x[!tmp, ]
   }
 
-  ## Distance in cM. Create if not present.
+  ## Distance in cM and Mb. Create if not present.
   if(is.null(x$peak.pos.cM))
     x$peak.pos.cM <- mypos(x, maps, "Mb", "peak")
+  if(is.null(x$peak.pos.Mb))
+    x$peak.pos.Mb <- mypos(x, maps, "cM", "peak")
   if(is.null(x$trait.pos.cM) & is.trait)
     x$trait.pos.cM <- mypos(x, maps, "Mb", "trait")
+  if(is.null(x$trait.pos.Mb) & is.trait)
+    x$trait.pos.Mb <- mypos(x, maps, "cM", "trait")
 
   x <- cumscore(x, ...)
 
