@@ -1,0 +1,238 @@
+We have the following generic data objects
+1. cross object
+      already run calc.genoprob to user specs to save space
+      has some phenotypes
+      need to import others (e.g. using PHP tools)
+      B6BTBR07 with Angie's markers
+      B6BTBR07 with only SNPs
+      B6BTBR07 reduced to 290 for miRNA (not needed--filter mice as usual)
+
+2. permutation file(s) or threshold.level
+      allow X chr in addition to male, female, both?
+      specific to sample size of cross
+      B6BTBR07 for 541 mice used for clinical measurements
+      B6BTBR07 for 500 mice used for mRNA*
+      B6BTBR07 reduced to 290 for miRNA*
+      create offline, read with qm.perm()
+
+3. gene.annot gene annotation
+      gene names must correspond to mRNA names or identifiers
+      organism build specific
+      periodically updated
+      uses a_gene_id as identifier, Symbol, Chromosome,
+Chromosome_Position, Description
+
+4. physical (and genetic) map (as CSV or as object--see update.snp.map)
+      tied to type of marker (eg. Affy 5K SNP chip)
+      organism build specific
+      periodically updated
+      need cross object to build connection to genetic map
+      need generic routine to replace
+	   myapprox(Mb.map[[chr]], cM.map[[chr]])
+      by
+           approx.map(map.object, to.cM = TRUE, chr = chr)
+
+Cross, maps and perm objects should be combined into one object via
+qm.object().
+Gene annotation is done only rarely; it can be created using qm.annotation().
+Gene annotation and marker objects can be created from CSV
+files when library is built. Perm should be created "off line" as it
+takes considerable time.
+
+
+   tissue/category types (eliminate this in code)
+   scan type (eliminate this in code, or isolate up top)
+
+######################################################################
+
+We have generic routines that run things:
+   aug.scanone (formerly mult.scanone)
+   
+Already done:
+Want to break up the problem.
+1. identify traitnames, cross.name, tissue.name.
+2. create or get scanone
+   2a. create: get data and map; run scanone
+   2b. get: import or load data
+3. decide on plot
+   3a. typical scanone: myplot idea
+   3b. heatmap: multtrait.plot idea
+
+
+######################################################################
+## Files are on diabetes.wisc.edu server under following:
+http://attie.wisc.edu/lab/...
+file:///opt/lampp/lab/...
+######################################################################
+PHP code is in .../tools
+######################################################################
+## External files needed (in .../data/
+
+## Gene annotations for Mouse build 36 = MM8 (created by YJ Choi).
+## YJ Choi folders
+## direct:		.../data_userfiles/123466/...
+## via intranet:	Home/Younjeong Choi/...
+## .../F2_array_data_-_mlratio/Annotation/F2.Annotation.mm8.20080208.csv
+data(gene.annot)
+help(gene.annot)
+
+## SNP physical map (updated periodically by Ron Zhu).
+## .../data_for_intranet/snps/snp_4853.txt
+update.snp.map
+
+## Permutation files (created by 
+
+######################################################################
+[multtrait.R] ## handle pre-processed data
+multtrait 
+  is.raws/multraw
+  get.scans
+  find.gene.annot
+  find.threshold
+  calc.hc
+  composite.lod
+summary.multtrait
+  summary.aug.scanone
+plot.multtrait
+  plot.aug.scanone
+  myplot.scanone
+
+[myplot.R] ## 1D profile scans
+myplot.scanone
+  find.threshold
+  myapprox
+  plot.aug.scanone
+  add.rug
+mysum.scanone
+  summary.aug.scanone
+
+[multraw.R] ## handle raw data
+multraw
+  get.raws
+  find.chr
+  add.raws
+  mytrait
+  getsex [R/qtl]
+summary.multraw
+plot.multraw
+  mylabels
+  plot.scanone [R/qtl]
+  add.rug
+  calc.genoprob [R/qtl]
+  getsex [R/qtl]
+is.raws
+get.raws
+add.raws
+
+[aug.scanone.R] ## Multiple scans and heat maps.
+aug.scanone ## creat mult.scanone object (takes time!)
+  mypull.loci
+  normal.trans
+max.aug.scanone
+  myapprox
+summary.aug.scanone
+  sumone.scanone
+  find.gene.annot
+plot.summary.aug.scanone
+  myapprox
+  mylabels
+  add.rug
+print.summary.aug.scanone
+  mysum.scanone
+plot.aug.scanone
+  myplot.scanone
+  mylabels
+  myapprox
+  find.gene.position
+  add.rug
+
+[annot.R]
+get.geneid
+  find.gene.annot
+get.symid
+mylabels
+  get.geneid
+  get.symid
+  find.gene.annot
+find.gene.annot
+find.gene.position
+  myapprox
+
+[cistrans.R]
+cistrans
+  mypos
+  cumscore.dens
+mypos
+mycol
+summary.cistrans
+  summary.cumscore
+plot.cistrans
+  plot.cis.dist
+  add.rug
+  plot.cumscore
+cumscore
+print.summary.cumscore
+cumscore.dens
+summary.cumscore
+plot.cumscore
+  cumscore.dens
+  add.rug
+
+[functions.R]
+normal.trans
+find.chr
+find.threshold
+mytrait
+
+[map.R]
+myapprox		# depends on Mb and cM data
+cM2Mb
+  myapprox
+Mb2cM
+  myapprox
+mypull.loci
+  calc.genoprob [R/qtl]
+  create.map [R/qtl]
+update.snp.map
+  pull.map [R/qtl]
+  myapprox
+
+[mygeno.image.R]
+mygeno.image
+  getsex [R/qtl]
+  pull.geno [R/qtl]
+  pull.map [R/qtl]
+  find.pheno [R/qtl]
+  xlim.range
+summary.mygeno.image
+xlim.range
+plot.mygeno.image
+  xlim.range
+
+[cis.dist.R]
+cis.dist
+plot.cis.dist
+max.cispeaks
+  mypull.loci
+
+[scan.R]
+calc.hc
+get.scans
+  get.geneid
+  get.symid
+composite.lod
+maxit
+  find.gene.position
+add.rug
+  myapprox
+sumone.scanone
+
+## Drop or incorporate along the way?
+[deprecated.R]
+[qb.R]
+[snp.R]
+
+[recover.R]
+myrecover
+mylegacy
+

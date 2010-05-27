@@ -1,0 +1,58 @@
+############################################################################
+# Export directives.  These directives export functions.  S3 methods for
+# classes declared in the package should be declared with the "S3method"
+# directive.
+#
+
+export(multraw)
+export(multtrait)
+export(aug.scanone)
+export(cistrans)
+export(make.bestscan)
+export(listof.complod)
+export(mygeno.image)
+export(pull.pseudomarkers)
+export(qm.approx)
+export(read.perms)
+export(read.maps)
+export(read.annotation)
+
+##############################################################################
+# S3method declarations.  These will allow generic methods to function properly
+# with functions such as "plot.xxx" declared in the package.
+#
+
+S3method(summary, read.perms)
+S3method(plot, read.perms)
+S3method(summary, read.maps)
+S3method(print, read.maps)
+S3method(plot, read.maps)
+
+S3method(plot, aug.scanone)
+S3method(print, aug.scanone)
+S3method(summary, aug.scanone)
+S3method(print, summary.aug.scanone)
+
+S3method(summary, cistrans)
+S3method(print, summary.cistrans)
+S3method(print, cistrans)
+S3method(plot, cistrans)
+
+S3method(plot, multraw)
+S3method(print, multraw)
+S3method(summary, multraw)
+S3method(print, summary.multraw)
+
+S3method(plot, multtrait)
+S3method(print, multtrait)
+S3method(summary, multtrait)
+
+S3method(plot, cistrans)
+S3method(print, cistrans)
+S3method(summary, cistrans)
+
+S3method(plot, mygeno.image)
+S3method(print, mygeno.image)
+S3method(summary, mygeno.image)
+
+S3method(plot, listof.complod)

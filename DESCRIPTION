@@ -1,0 +1,13 @@
+Package: qtlview
+Version: 1.0.0
+Date: 2009-05-29
+Author: Brian S. Yandell <yandell@stat.wisc.edu>
+Title: Visualization of QTL Scans for Multiple Traits
+Description: Functions to View Multiple Trait QTL Scans
+Maintainer: Brian S. Yandell <yandell@stat.wisc.edu>
+Depends: stats, qtl, lattice
+LazyLoad: yes
+LazyData: yes
+License: GPL (>= 2)
+URL: http://www.stat.wisc.edu/~yandell/attie/data
+Packaged: Fri May 29 14:04:12 2009; yandell

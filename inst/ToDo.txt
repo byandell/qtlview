@@ -1,0 +1,37 @@
+22 mar 2009
+get.scans includes code for patchmap of Angie's markers.
+Need to drop this, but allow user in PHP to select full set?
+How to keep size of library B6BTBR07 down.
+
+Need to remove dependence on B6BTBR00 and fix maps, perms for that.
+
+###########################################################3
+2008
+Incorporate update.snp.map into use in cross library.
+
+Standardize use of externals.
+	    permutations (drop?)
+	    snp.map stuff:
+
+    cM.map    cM map extracted from cross object
+    Mb.map    Mb map created (by you) based on SNP positions
+    cM.same    cM map interpolation for SNPs that do not segregate (same for both parent lines)
+    Mb.same    Mb position for the cM.same SNPs
+
+Add PHP code into inst folder.
+
+Use NAMESPACE to hide extra routines.
+
+Document main routines.
+
+Each routine has a generic S3 plot and summary method. Each routine has option when looking at one chr to use cM or Mb as primary scale for plotting, with other scale above as in attached PDF. Can also zoom in.
+1a. multtrait()
+    Plot 1-D scans either on top of each other or as heatplot
+    using bastardized plot.scantwo.
+1b. cistrans()
+    Plot peaks vs. transcript location (to identify hotspot trans
+    bands). Includes running mean of number of peaks per position.
+1c. mygeno.image()
+    My version of Karl's geno.image. Used to examine genotype data
+    for double-crossovers, etc. Can focus only on recombinants in
+    a subregion.
