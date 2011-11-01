@@ -40,7 +40,7 @@ find.trait.position <- function(traitnames, maps,
                                 prefix = "trait", digits = 3, ...)
 {
   ## Find match of traitname and trait.annotation.
-  is.selected <- find.trait.annot(unique(traitnames), trait.annotation)
+  is.selected <- find.trait.annot(unique(traitnames), trait.annotation, ...)
   n.pos <- sum(is.selected > 0)
   if(n.pos) {
     trait.position <- data.frame(
@@ -83,21 +83,18 @@ read.annotation <- function(filename, update.names = NULL,
   trait.annotation <- read.csv(filename, header = TRUE, ...)
   annot.names <- names(trait.annotation)
 
-  ## Want all these names on the file eventually.
-  ## Start_Coordinate and End_Coordinate are used only
-  ## to create Chromosome_Position if missing, then dropped.
-  ## Only the following are curently used in package qtlmult:
+  ## Need a_gene_id, Symbol, Chromosome, Start_Coordinate, End_Coordinate, Strand
+  ## Chromosome_Position  = Start_Coordinate / 10^6 (if missing)
+  ## Start_Coordinate, End_Coordinate are then dropped
+  ## Only the following are curently used in package qtlview:
   ## a_gene_id,Symbol,Chromosome,Chromosome_Position
-  final.names <- c("a_substance_id", "accession_code",
-                   "a_gene_id", "Symbol", "Alternate_Symbols",
-                   "LocusLinkID", "Name",
-                   "Alternate_Names", "Description",
-                   "Chromosome", "Start_Coordinate", "End_Coordinate",
-                   "Strand")
+  
+  final.names <- c("a_gene_id", "Symbol", "Chromosome",
+                   "Start_Coordinate", "End_Coordinate", "Strand")
 
   if(length(update.names)) {
     ## Check that update names are in final names.
-    m <- pmatch(names(update.names), final.names)
+    m <- pmatch(tolower(names(update.names)), tolower(final.names))
     if(any(is.na(m)))
       stop(paste("annotation internal names do not match:",
                  paste(names(update.names)[is.na(m)], collapse = ", ")))
@@ -116,16 +113,19 @@ read.annotation <- function(filename, update.names = NULL,
 
   ## Make sure all final names are on trait.annotation.
   tmp <- is.na(match(final.names, annot.names))
-  if(any(tmp))
-    stop(paste("missing trait annotation names:",
-               paste(final.names[tmp], collapse = ", ")))
+  if(any(tmp)) {
+    warning(paste("missing trait annotation names:",
+                  paste(final.names[tmp], collapse = ", ")))
+    final.names <- final.names[!tmp]
+  }
 
   if(drop.extra)
     trait.annotation <- trait.annotation[, final.names]
 
   if(is.null(trait.annotation$Chromosome_Position))
-    trait.annotation$Chromosome_Position <- 0.5 * 10^-6 *
-      (trait.annotation$Start_Coordinate + trait.annotation$End_Coordinate)
+    trait.annotation$Chromosome_Position <- 10^-6 * trait.annotation$Start_Coordinate
+#    trait.annotation$Chromosome_Position <- 0.5 * 10^-6 *
+#      (trait.annotation$Start_Coordinate + trait.annotation$End_Coordinate)
   if(drop.extra)
     trait.annotation$Start_Coordinate <- trait.annotation$End_Coordinate <- NULL
 
@@ -134,9 +134,9 @@ read.annotation <- function(filename, update.names = NULL,
 
 ################################################################
 ## Used here only.
-get.geneid <- function(traitnames, trait.annotation, blank = TRUE)
+get.geneid <- function(traitnames, trait.annotation, blank = TRUE, ...)
 {
-  tissues <- find.trait.annot(traitnames, trait.annotation, out = "tissue")
+  tissues <- find.trait.annot(traitnames, trait.annotation, out.type = "tissue", ...)
 
   geneid <- sapply(strsplit(traitnames, ".", fixed = TRUE),
                    function(x) x[length(x)])
@@ -183,8 +183,10 @@ mylabels <- function(traitnames, max.names = 200, ylab)
     traitnames
 }
 ###############################################################################
-find.trait.annot <- function(traitnames, trait.annotation, out = "selected", unknown = "unknown",
-                            summarize = FALSE)
+find.trait.annot <- function(traitnames, trait.annotation, out.type = "selected",
+                             summarize = FALSE,
+                             tissue.list = NULL,
+                             ...)
 {
   if(is.null(trait.annotation))
     return(NULL)
@@ -203,9 +205,11 @@ find.trait.annot <- function(traitnames, trait.annotation, out = "selected", unk
     ## Tissue is first part of traitnames.
     tissues <- tolower(sapply(strsplit(traitnames, ".", fixed = TRUE),
                    function(x) x[1]))
-    tmp <- !(tissues %in% c("clinical","islet","hypo","adipose","liver","gastroc","kidney"))
-    if(any(tmp))
-      tissues[tmp] <- unknown
+    if(!is.null(tissue.list)) {
+      tmp <- !(tissues %in% tissue.list)
+      if(any(tmp))
+        tissues[tmp] <- "unknown"
+    }
   }
   if(summarize) {
     tissues <- table(tissues)

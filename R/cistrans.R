@@ -143,6 +143,12 @@ mycol <- function(x,
                   attenuate = (col.scheme != "gray"),
                   ...)
 {
+  ## I think all this works well. However, it does not include a fixed window
+  ## for cis vs. trans, as biologists seem to want in practice.
+  ## This could be accomplished by (a) adding a window size and
+  ## (b) making att 0/1 if the window approach is used.
+  ## Need to think how best to accommodate this.
+  
   ## Want to be able to modify the red so that it reflects attenuation.
   col.scheme <- match.arg(col.scheme)
   if(col.scheme == "redblue") 

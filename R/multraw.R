@@ -359,7 +359,7 @@ plot.multraw <- function(x, chr = "",
     p <- qm.approx(x$maps, base, chr)
     if(!use.cM) { ## use Mb.
       for(i in seq(x$traitnames))
-        x$sums[[i]]$pos <- qm.approx(maps, "cM", chr, x$sums[[i]]$pos)$y
+        x$sums[[i]]$pos <- qm.approx(x$maps, "cM", chr, x$sums[[i]]$pos)$y
     }
   }
 

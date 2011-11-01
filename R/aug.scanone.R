@@ -13,6 +13,7 @@ aug.scanone <- function(traitnames = mytrait(pheno = cross$pheno),
                         trait.annotation = NULL,
                         maps = myget(cross.name, "maps"),
                         scan.type = c("LOD","LPD","2logBF"),
+                        tissue.list = c("clinical","islet","hypo","adipose","liver","gastroc","kidney"),
                         ...)
 {
   sexes <- c("both","male","female","ignore")
@@ -94,7 +95,7 @@ aug.scanone <- function(traitnames = mytrait(pheno = cross$pheno),
 
   ## Add trait positions.
   trait.position <-
-    find.trait.position(traitnames, maps, trait.annotation, ...)
+    find.trait.position(traitnames, maps, trait.annotation, tissue.list = tissue.list, ...)
   attr(lods, "trait.position") <- trait.position
     
   class(lods) <- c("aug.scanone", "scanone", "data.frame")
@@ -628,7 +629,7 @@ plot.aug.scanone <- function(x,
     plod <- pmin(as.matrix(lod), max.lod)
   }
 
-  if(!is.null(hc)) {
+  if(cluster & !is.null(hc)) {
     lod <- lod[, hc$order]
     plod <- plod[, hc$order]
     if(!add.position)

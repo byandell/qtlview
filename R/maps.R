@@ -1,5 +1,7 @@
 ################################################################
 ## My approximation routine. Use qm.approx, hide myapprox.
+## This cuts off at end of map. Get Karl's approach that extrapolates and add.
+
 qm.approx <- function(maps, base = bases, chr, ..., non.seg = FALSE)
 {
   bases <- c("cM","Mb")
@@ -24,7 +26,6 @@ add.rug <- function(chr, main, maps,
                     bottom.axis = FALSE,
                     side = 1)
 {
-  ##*** Somehow the top axis is getting cM and Mb mixed up. Need to fix.
   bases <- c("cM","Mb")
   base <- bases[2 - use.cM]
   off.base <- bases[1 + use.cM]
@@ -147,8 +148,6 @@ read.maps <- function(cross, filename, chr.valid = names(cross$geno),
                    genotypes = c("A","H","B"),
                    verbose = TRUE, ...)
 {
-  ##*** cM.same and Mb.map do not plot properly.
-  
   ## File should have snp, chr, loc, and orient columns (last is optional).
   geno <- read.table(filename, header = TRUE, fill = TRUE, comment.char = "")
   
