@@ -264,8 +264,9 @@ make.bestscan <- function(cross, best, pattern = best2pattern(best),
     cat("Creating", n.traits, "x", nrow(loci), "aug.scanone object of pattern scans...\n")
   bestscan <- matrix(0, n.traits, nrow(loci))
   dimnames(bestscan) <- list(traitnames, row.names(loci))
-      
-  for(i in 1:19) {
+
+  chr.names <- levels(loci$chr)
+  for(i in chr.names) {
     if(verbose) cat("chr", i, "\n")
     
     locus.i <- which(loci$chr == i)

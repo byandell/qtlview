@@ -32,7 +32,9 @@ cistrans <- function(x = read.table(filename, header = TRUE, sep = sep),
   if(is.trait)
     is.trait <- !all(is.na(x$trait.chr))
   
-  getreal <- function(x, realx = c(1:19,"X")) {
+  chr.names <- names(maps$cM.map)
+
+  getreal <- function(x, realx = chr.names) {
     if(is.null(x))
       NULL
     else {
@@ -44,7 +46,6 @@ cistrans <- function(x = read.table(filename, header = TRUE, sep = sep),
   ## Set up peak chromosomes.
   peak.chrs <- getreal(x$peak.chr)
   x$peak.chr <- ordered(x$peak.chr, peak.chrs)
-  chr.names <- names(maps$cM.map)
   peak.chr <- chr.names[chr.names %in% peak.chr]
   if(!length(peak.chr))
     stop("must select at least on peak chr")
@@ -141,6 +142,7 @@ mycol <- function(x,
                   n.col = 256,
                   col.scheme = c("redblue","cis","gray","redblue2"),
                   attenuate = (col.scheme != "gray"),
+                  window.size = NULL,
                   ...)
 {
   ## I think all this works well. However, it does not include a fixed window
@@ -165,8 +167,16 @@ mycol <- function(x,
   if(attenuate) {
     tmp <- (as.character(x$peak.chr) == as.character(x$trait.chr) &
             !is.na(x$peak.chr) & !is.na(x$trait.chr))
-    if(any(tmp))
-      att[tmp] <- exp(- 0.04 * abs(x$peak.pos.Mb[tmp] - x$trait.pos.Mb[tmp]))
+    if(any(tmp)) {
+      tmp2 <- abs(x$peak.pos.Mb[tmp] - x$trait.pos.Mb[tmp])
+      if(is.null(window.size)) ## attenuate exponentially
+        att[tmp] <- exp(- 0.04 * tmp2)
+      else { ## attenuate by window.size
+        tmp2 <- tmp2 <= window.size
+        if(any(tmp2))
+          att[tmp][tmp2] <- 1
+      }
+    }
     gb <- rev(seq(0, ifelse(col.scheme == "cis", 0.8, 1), len = n.col))
   }
     
@@ -226,6 +236,7 @@ plot.cistrans <- function(x, cex = ifelse(n.peak == 1 | n.trans == 1, 1, 0.2),
                           trait.chr = attr(x, "trait.chr"),
                           show.cumscore = TRUE,
                           pch = 1,
+                          window.size = NULL,
                           ...)
 {
   ## Add equal.spacing here and for cumscore? Is it worth it?
@@ -256,7 +267,7 @@ plot.cistrans <- function(x, cex = ifelse(n.peak == 1 | n.trans == 1, 1, 0.2),
   ## of plot.cis.dist in pattern.R.
   if(cis.only) {
     print(plot.cis.dist(x, col.score = col.score, main = main,
-                        use.cM = use.cM, peak.chr = peak.chr, ...))
+                        use.cM = use.cM, peak.chr = peak.chr, window.size = window.size, ...))
   }
   else {
 
@@ -316,7 +327,7 @@ plot.cistrans <- function(x, cex = ifelse(n.peak == 1 | n.trans == 1, 1, 0.2),
     ## Set up colors.
     if(col.score == "trans")
       col.score <- "cis"
-    colors <- mycol(x, ...)
+    colors <- mycol(x, ..., window.size = window.size)
     index <- order(colors$index)
     colors <- colors$value
 
@@ -441,7 +452,7 @@ print.summary.cistrans <- function(x, digits = 3, ...)
 cumscore.dens <- function(object,
                           chr = chrs,
                           use.cM = FALSE,
-                          window = 5,
+                          window.dens = 5,
                           ...)
 {
   chrs <- table(object$peak.chr)
@@ -451,7 +462,7 @@ cumscore.dens <- function(object,
   pos <- "peak.pos.cM"
   scores <- c("unweighted","peak.enhscore","peak.attscore","peak.score")
   chr <- as.character(chr)
-  window <- window / 2
+  window.dens <- window.dens / 2
 
   index <- paste(object$peak.chr, object$peak.pos.cM, sep = ":")
   index <- ordered(index, unique(index))
@@ -470,13 +481,13 @@ cumscore.dens <- function(object,
       
   dens$unweighted <- table(index)
 
-  tmpfn <- function(x, scores, pos, window) {
+  tmpfn <- function(x, scores, pos, window.dens) {
     scores <- scores[match(names(x), scores, nomatch = 0)]
     
     dens.scores <- matrix(NA, nrow(x), length(scores))
     dimnames(dens.scores) <- list(NULL, scores)
 
-    index <- outer(x[[pos]], x[[pos]], function(x,y,w) abs(x-y)<= w, window)
+    index <- outer(x[[pos]], x[[pos]], function(x,y,w) abs(x-y)<= w, window.dens)
     index <- apply(index, 1, function(x) range(seq(x)[x]))
 
     n.values <- sum(x$unweighted)
@@ -494,7 +505,7 @@ cumscore.dens <- function(object,
     ii <- dens$peak.chr == chri
 
     if(any(ii))
-      dens[ii, scores] <- tmpfn(dens[ii, ], scores, pos, window)
+      dens[ii, scores] <- tmpfn(dens[ii, ], scores, pos, window.dens)
   }
   
   dens
@@ -544,7 +555,7 @@ summary.cistrans <- function(object, chr = levels(ordered(object$peak.chr)),
 #####################################################################
 plot.cumscore <- function(x, peak.chr = NULL,
                           main = mains, xlim = xlims, use.cM = FALSE,
-                          use.density = TRUE, window = 5,
+                          use.density = TRUE, window.dens = 5,
                           maps = maps, ...)
 {
   mains <- attr(x, "main")
@@ -552,7 +563,7 @@ plot.cumscore <- function(x, peak.chr = NULL,
   if(use.density) {
     dens <- attr(x, "dens")
     if(is.null(dens))
-      dens <- cumscore.dens(x, window = window, ...)
+      dens <- cumscore.dens(x, window.dens = window.dens, ...)
   }
   
   if(!is.null(peak.chr))
@@ -590,7 +601,7 @@ plot.cumscore <- function(x, peak.chr = NULL,
         ylim <- range(dens$peak.score, dens$peak.enhscore, dens$peak.attscore, dens$unweighted, na.rm = TRUE)
         plot(dens[[pos]], dens$peak.score, type = "n", xlim = xlim, xaxt = "n",
              ylim = ylim,
-             xlab = "", ylab = paste("traits with peaks in ", window, "cM window", sep = ""))
+             xlab = "", ylab = paste("traits with peaks in ", window.dens, "cM window", sep = ""))
 
         abline(h = 0, col = "gray", lwd = 2)
 

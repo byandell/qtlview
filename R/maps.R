@@ -2,10 +2,13 @@
 ## My approximation routine. Use qm.approx, hide myapprox.
 ## This cuts off at end of map. Get Karl's approach that extrapolates and add.
 
-qm.approx <- function(maps, base = bases, chr, ..., non.seg = FALSE)
+qm.approx <- function(maps, base = bases, chr,
+                      pos = posn, n.pos = 30,
+                      use.qtl = FALSE,
+                      ..., non.seg = FALSE)
 {
   bases <- c("cM","Mb")
-  base <- pmatch(base, bases)
+  base <- pmatch(base, bases)[1]
   if(is.na(base))
     stop("base must be cM or Mb")
   
@@ -14,7 +17,19 @@ qm.approx <- function(maps, base = bases, chr, ..., non.seg = FALSE)
   non.seg <- ifelse(non.seg, "same", "map")
   x <- paste(x, non.seg, sep = ".")
   y <- paste(y, non.seg, sep = ".")
-  myapprox(maps[[x]][[chr]], maps[[y]][[chr]], ...)
+
+  map.x <- maps[[x]][chr]
+  map.y <- maps[[y]][chr]
+  posn <- pretty(c(map.x[[1]]), n.pos)
+  
+  if(use.qtl) {
+    ## Need to flesh this out using Aimee's interpolating positions email from 15 nov.
+    stop("use.qtl = TRUE is not working yet")
+    map.x <- data.frame(...)
+    interpmap(map.x, map.y)
+  }
+  else
+    myapprox(map.x[[1]], map.y[[1]], pos, ...)
 }
 ################################################################
 ## This is the only plot routine that refers to same and map.
