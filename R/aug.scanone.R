@@ -552,7 +552,7 @@ plot.aug.scanone <- function(x,
                  terrain = terrain.colors(256), 
                  topo = topo.colors(256), cm = cm.colors(256),
                  redblue = rev(rainbow(256, 
-                   start = 0, end = 2/3, gamma = gamma)))
+                   start = 0, end = 2/3))) ## gamma no longer in rainbow()
 
   traitnames <- names(x)[match(traitnames, names(x), nomatch = 0)]
 

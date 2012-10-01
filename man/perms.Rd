@@ -9,8 +9,8 @@ Use cross and file of physical locations to create a list of R/qtl map objects.
 \usage{
 read.perms(cross, filenames, row.names = NULL, perms,
   method = "hk", model = "normal", \dots)
-\method{summary}{read.perms}{object, \dots}
-\method{plot}{read.perms}{x, \dots}
+\method{summary}{read.perms}(object, \dots)
+\method{plot}{read.perms}(x, \dots)
 }
 \arguments{
   \item{cross}{Objects of class \code{cross}. See

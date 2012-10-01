@@ -192,10 +192,10 @@ find.trait.annot <- function(traitnames, trait.annotation, out.type = "selected"
     return(NULL)
   
   ## This routine has multiple uses:
-  ## out="selected": Find a_gene_id as last part of traitnames (sep = ".").
-  ## out="tissues":  Find tissues as first part of traitnames (set to unknown if missing).
+  ## out.type="selected": Find a_gene_id as last part of traitnames (sep = ".").
+  ## out.type="tissues":  Find tissues as first part of traitnames (set to unknown if missing).
   ## summarize=TRUE: Summarise tissues for use in main plot title.
-  if(out == "selected") {
+  if(out.type == "selected") {
     ## a_gene_id is last part of traitnames for transcripts.
     tmp <- sapply(strsplit(traitnames, ".", fixed = TRUE),
                   function(x) x[length(x)])

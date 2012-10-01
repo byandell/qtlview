@@ -1,11 +1,12 @@
 Package: qtlview
-Version: 1.2.1
-Date: 2012-01-10
+Version: 1.2.3
+Date: 2012-10-01
 Author: Brian S. Yandell <yandell@stat.wisc.edu>
 Title: Visualization of QTL Scans for Multiple Traits
 Description: Functions to View Multiple Trait QTL Scans
 Maintainer: Brian S. Yandell <yandell@stat.wisc.edu>
-Depends: stats, qtl, lattice
+Depends: stats, qtl, lattice, utils
+Suggests: qtlbim
 LazyLoad: yes
 LazyData: yes
 License: GPL (>= 2)

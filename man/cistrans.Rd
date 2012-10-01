@@ -23,7 +23,7 @@ cistrans(x, filename, peak.chr, trans.chr, min.lod = 0,
   \item{x}{data frame with LOD peak for traits (rows) and chromosomes (columns)}
   \item{filename}{name of file with \code{x} if it is to be read in}
   \item{cross.name}{name of cross (used by \code{maps} and \code{trait.annotation})}
-  \item{maps}{list of \code{\link[qtl]{map}} objects created by
+  \item{maps}{list of \code{\link[qtl]{pull.map}} objects created by
     \code{\link{read.maps}}; default is associated with \code{cross.name}}
   \item{peak.chr}{names of chromosome(s) to show peaks}
   \item{trans.chr}{names of chromosome(s) to include traits}

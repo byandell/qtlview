@@ -178,7 +178,7 @@ find.threshold <- function(scans, chr = "", threshold.lod)
 }
 ################################################################
 threshold.lines <- function(scans, threshold.lod, gap = 25,
-                           lwd = 2, lty = 2, ...)
+                           lwd = 2, lty = 2, col.scheme, cluster, ...)
 {
   ## Assume scans has been reduced to those chrs being plotted.
   chrs <- levels(scans$chr)

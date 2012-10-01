@@ -116,17 +116,20 @@ pull.pseudomarkers <- function(cross,
                                step = step.default,
                                off.end = off.end.default,
                                stepwidth = stepwidth.default,
+                               map.function = map.function.default,
                                traitnames = NULL, ...)
 {
   if(is.null(cross$geno[[1]]$prob)) {
-    step.default <- 2
+    step.default <- 0.5
     off.end.default <- 0
-    stepwidth.default <- "variable"
+    stepwidth.default <- "max"
+    map.function.default <- "c-f"
   }
   else {
     step.default <- attr(cross$geno[[1]]$prob, "step")
     off.end.default <- attr(cross$geno[[1]]$prob, "off.end")
     stepwidth.default <- attr(cross$geno[[1]]$prob, "stepwidth")
+    map.function.default <- attr(cross$geno[[1]]$prob, "map.function")
   }
   ## Get loci = SNPs plus pseudomarkers between SNPs.
   ## Assume here that cross already run through calc.genoprob

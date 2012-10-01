@@ -11,7 +11,6 @@ make.bestscan(cross, best, pattern, scan.type = "BIM",
   trait.annotation = get(paste(cross.name, "traitnames", sep = ".")),
   attenuate = 1, tolerance = 1e-05, verbose = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{cross}{Object created by \code{\link[qtl]{read.cross}}.}
   \item{best}{Data frame with trait name as first column and

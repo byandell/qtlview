@@ -20,9 +20,9 @@ multraw <- function(traitnames = NULL,
                     category = "clinical",
                     scan.type = c("LOD","LPD","BF"),
                     ylab = c("symbol","a_gene_id","symbol.a_gene_id","none"),
-                    step = 2, off.end = 0, error.prob = 0.0001, 
-                    map.function = "haldane",
-                    stepwidth = "variable",
+                    step = 0.5, off.end = 0, error.prob = 0.002, 
+                    map.function = "c-f",
+                    stepwidth = "max",
                     trait.annotation = NULL,
                     ...)
 {
