@@ -37,7 +37,7 @@ make.bestscan(cross, best, pattern, scan.type = "BIM",
   for \code{chrom} and \code{locus}. Other columns in best will depend on
   the method of construction, but the last column should contain a
   QTL-specific score, which is used for plotting. For instance, using
-  \code{\link[qtlbim]{qb.best}} includes a column for the posterior
+  qb.best from suggested package R/qtlbim includes a column for the posterior
   probability for that QTL (\code{n.qtl}), and a last column with the
   QTL-explained \code{variance}.
   

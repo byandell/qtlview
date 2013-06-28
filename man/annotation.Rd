@@ -40,7 +40,6 @@ A data frame with entries:
     \item{\code{Chromosome_Position}}{Chromosome position in Mb.}
 }
 \author{Brian S. Yandell (byandell@wisc.edu)}
-\seealso{\code{\link[B6BTBR07]{trait.annotation}}}
 \examples{
 \dontrun{
 ## Do this once when creating your cross library.

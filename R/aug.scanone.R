@@ -146,7 +146,7 @@ scanone.qb <- function(cross, chr, pheno.col, method = "LPD",
   tmp <- qb.mcmc(cross, traitname, normal.scores[i], cross.name = cross.name,
                  cross = cross, fixcov = fixcov, intcov = intcovs, interval = interval,
                  ..., verbose = verbose)
-  out <- qb.scanone(tmp, type = method)
+  out <- qb.scanone(tmp, type.scan = method)
   
   if(any(is.X)) {
     ## Append rows with 0 values.
@@ -672,7 +672,8 @@ plot.aug.scanone <- function(x,
       dots[["mar1"]]
     else
       c(4,
-        5 + round(add.names * max(1 + nchar(labels)) / 5),
+        max(strwidth(labels, units = "in") / (par("cin")[2] * par("cex")))
+        + par("mgp")[2],
         3 + (length(chr) == 1),
         (zscale == "value") * 3) + 0.1
   })

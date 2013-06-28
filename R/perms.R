@@ -112,22 +112,13 @@ threshold.perm <- function(perms, sex, threshold.level, type = "A")
   threshold.lod <- 0
   names(threshold.lod) <- "A"
   if(threshold.level > 0 & threshold.level < 1) {
-    if("A" %in% type) {
-      threshold.lod["A"] <- {
-        tmp <- summary(perms, threshold.level)
-        if(inherits(perms[[1]], "matrix"))
-          tmp[, sex]
-        else
-          tmp$A[[sex]]
-      }
-    }
+    tmp <- summary(perms[[sex]], threshold.level)
+    if("A" %in% type)
+      threshold.lod["A"] <- ifelse(is.list(tmp), tmp$A, tmp[1])
     if("X" %in% type) {
-      if(!inherits(perms[[1]], "matrix")) {
-        tmp <- summary(perms, threshold.level)$X[[sex]]
-        if(length(type) == 1)
-          threshold.lod <- NULL
-        threshold.lod["X"] <- tmp
-      }
+      if(length(type) == 1)
+        threshold.lod <- NULL
+      threshold.lod["X"] <- tmp$X
     }
   }
   threshold.lod

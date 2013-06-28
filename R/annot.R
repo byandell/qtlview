@@ -175,12 +175,19 @@ get.symid <- function(geneid, trait.annotation, catenate = TRUE)
   geneid
 }
 ################################################################
-mylabels <- function(traitnames, max.names = 200, ylab)
-{
+mylabels <- function(traitnames, max.names = 200, ylab){
   if(ylab == "none" | length(traitnames) > max.names)
-    TRUE
-  else
-    traitnames
+    return(TRUE)
+  
+  if(ylab == "symbol.a_gene_id")
+    return(traitnames)
+  if(ylab == "symbol" | ylab == "a_gene_id"){
+    traitspl <- strsplit(traitnames,"\\.")
+    if(ylab == "symbol")
+      return(sapply(traitspl,function(x) paste(x[1],x[2],sep=".")))
+    else
+      return(sapply(traitspl, function(x) paste(x[1],x[length(x)],sep=".")))
+  }
 }
 ###############################################################################
 find.trait.annot <- function(traitnames, trait.annotation, out.type = "selected",

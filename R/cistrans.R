@@ -16,7 +16,7 @@ cistrans <- function(x = read.table(filename, header = TRUE, sep = sep),
   ## Kludge until PHP code changes:
   dots <- list(...)
   if ("trans.chr" %in% names(dots))
-    trait.chr <- trans.chr
+    trait.chr <- dots$trans.chr
 
   use.annot <- use.annot & !is.null(trait.annotation)
 
@@ -621,7 +621,9 @@ plot.cumscore <- function(x, peak.chr = NULL,
         if(use.cM)
           lines(range(x$peak.pos.cM, na.rm = TRUE), c(0,1), col = "gray", lwd = 2)
         else
-          lines(Mb.map[[peak.chr]], cM.map[[peak.chr]] / max(cM.map[[peak.chr]]), col = "gray", lwd = 2)
+          lines(maps$Mb.map[[peak.chr]],
+                maps$cM.map[[peak.chr]] / max(maps$cM.map[[peak.chr]]),
+                col = "gray", lwd = 2)
 
         lines(x[[pos]], x$peak.cumscore, lwd = 2)
         lines(x[[pos]], x$peak.cumcount, lwd = 2, col = "green")
@@ -660,7 +662,7 @@ plot.cis.dist <- function(x, peak.chr = NULL, n.qtl = NULL, cutoff = 2,
   trellis.par.set(superpose.symbol = list(col = colors$color))
 
   xyplot(trait.pos.Mb ~ peak.pos.Mb | trait.chr, x,
-         group = color,
+         group = colors$color,
          panel = function(x,y,...) {
            panel.abline(0,1, col = "gray")
            panel.xyplot(x,y,...)

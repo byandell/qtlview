@@ -11,7 +11,7 @@ listof.complod <- function(file.groups, dir = NULL,
   scan.groups <- list()
   for(i in seq(n.groups)) {
     cat("group", group.names[i], "\n")
-    tmp <- multtrait(file=file.groups[i],
+    tmp <- multtrait(filename = file.groups[i],
                      scan.type = scan.type[i],
                      cross.name = "B6BTBR07",
                      drop.chr = FALSE, ...)
@@ -71,7 +71,7 @@ plot.listof.complod <- function(x,
     ylims <- range(ylims, x[[i]][[lodcolumn + 2]])
   
   for(i in seq(n.x))
-    plot.scanone(x[[i]], lodcolumn = lodcolumn, ylim = ylim, ylab = ylab,
-                 col = col[i], lty = lty[i], add = (i > 1), main = main, ...)
+    qtl:::plot.scanone(x[[i]], lodcolumn = lodcolumn, ylim = ylim, ylab = ylab,
+                       col = col[i], lty = lty[i], add = (i > 1), main = main, ...)
 }
 

@@ -139,7 +139,7 @@ multraw <- function(traitnames = NULL,
 
     ## Profile LOD.
     sums[[i]] <- scanone(crosssex, chr, pheno.col, method = method,
-                         intcov = covlist$intcov, addcov = covlist$addcov)
+                         intcovar = covlist$intcov, addcovar = covlist$addcov)
 
     ## Need to modify this to allow for X chromosome threshold.
     threshold.lod[i] <- threshold.perm(perms, sex[i], threshold.level)
@@ -373,7 +373,7 @@ plot.multraw <- function(x, chr = "",
     plot(x$sums[[i]], add = previous | (add & i > 1),
          col = col[i], ylim = ylim)
 
-    threshold.lines(x$sums[[i]], x$threshold.lod[i], col = col[i], ...)
+    threshold.lines(x$sums[[i]], x$threshold.lod[i], col.scheme = col[i], ...)
 
     if(i == 1 | !add)
       add.rug(chr, title, x$maps, p, use.cM)

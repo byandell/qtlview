@@ -23,7 +23,7 @@ Assumes \code{newdata} are in same individual order as \code{cross} if \code{ind
 }
 \examples{
 data(hyper)
-newdata <- data.frame(x = rnorm(nind(hyper))
+newdata <- data.frame(x = rnorm(nind(hyper)))
 cross <- add.phenos(hyper, newdata)
 summary(cross)
 
